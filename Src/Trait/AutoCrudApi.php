@@ -2,7 +2,7 @@
 
 namespace TaliumAbstract\Trait;
 
-use App\Http\Requests\RequestValidated;
+
 use F9Web\ApiResponseHelpers;
 use Illuminate\Http\Request;
 use Spatie\RouteAttributes\Attributes\Get;
@@ -12,6 +12,7 @@ use TaliumAbstract\Attributes\Contract\ReflectionMeta;
 use TaliumAbstract\Attributes\Model;
 use TaliumAbstract\Attributes\Service;
 use TaliumAbstract\Attributes\StaticMethodRules;
+use TaliumAbstract\Requests\RequestValidated;
 use TaliumAbstract\Services\AutoCrudApiServices;
 
 trait AutoCrudApi

@@ -1,0 +1,22 @@
+{
+    "name": "talium/wiz",
+    "description": "abstract automatic proccess",
+    "autoload": {
+        "psr-4": {
+            "Talium\\Wiz\\": "src/"
+        }
+    },
+    "authors": [{
+        "name": "egooktafanda97",
+        "email": "egooktafanda1097@gmail.com"
+    }],
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=8.0.0",
+        "laravel/framework": "^9.0",
+        "f9webltd/laravel-api-response-helpers": "dev-master",
+        "lerouse/laravel-repository": "dev-master",
+        "spatie/laravel-route-attributes": "^1.20"
+    }
+}
