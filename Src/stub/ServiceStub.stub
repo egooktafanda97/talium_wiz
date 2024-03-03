@@ -1,0 +1,9 @@
+<?php
+
+namespace App\Services{{ namespace }};
+use App\Repositories{{ namespace }}\{{ ModelName }}Repository;
+
+class {{ ModelName }}Service extends {{ ModelName }}Repository
+{
+    // Isi layanan di sini
+}

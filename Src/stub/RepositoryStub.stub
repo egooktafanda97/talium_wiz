@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Repositories{{ namespace }};
+
+use Illuminate\Database\Eloquent\Builder;
+use Lerouse\LaravelRepository\EloquentRepository;
+use App\Models\{{ ModelName }};
+
+class {{ ModelName }}Repository extends EloquentRepository
+{
+    /**
+     * Get the Repository Query Builder
+     *
+     * @return Builder
+     */
+    public function builder(): Builder
+    {
+        return {{ ModelName }}::query();
+    }
+}
