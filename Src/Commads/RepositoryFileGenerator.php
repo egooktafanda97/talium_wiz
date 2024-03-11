@@ -20,7 +20,7 @@ trait RepositoryFileGenerator
         }
 
         // Membuat File Service
-        $serviceStub = \File::get(resource_path('stubs/ServiceStub.stub'));
+        $serviceStub = \File::get(__DIR__ . '/../stub/ServiceStub.stub');
         $serviceContent = str_replace('{{ ModelName }}', $className, $serviceStub);
         $serviceContent = str_replace('{{ namespace }}',  "\\" . $namespace, $serviceContent);
         $serviceFileName = $directory . '/' . $className . 'Service.php';
@@ -35,7 +35,7 @@ trait RepositoryFileGenerator
         }
 
         // Membuat File Repository
-        $repositoryStub = \File::get(resource_path('stubs/RepositoryStub.stub'));
+        $repositoryStub = \File::get(__DIR__ . '/../stub/RepositoryStub.stub');
         $repositoryContent = str_replace('{{ ModelName }}', $className, $repositoryStub);
         $repositoryContent = str_replace('{{ namespace }}', "\\" . $namespace, $repositoryContent);
         $repositoryFileName = $repositoryDirectory . '/' . $className . 'Repository.php';

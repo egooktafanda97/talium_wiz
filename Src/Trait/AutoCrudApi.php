@@ -40,6 +40,18 @@ trait AutoCrudApi
         $this->Initialize();
     }
 
+    // before actions
+    public function before($req, $res, $next)
+    {
+        $next($req, $res);
+    }
+
+    // after actions
+    public function after($req, $res, $next)
+    {
+        $next($req, $res);
+    }
+
     /**
      * @overide
      */
@@ -83,8 +95,10 @@ trait AutoCrudApi
     public function store(RequestValidated $request)
     {
         try {
-            $data = $this->main_serveice->store($request);
-            return $this->respondCreated($data);
+            $this->before($request, $this, function ($req, $res) {
+                $data = $this->main_serveice->store($req);
+                return $this->respondCreated($data);
+            });
         } catch (\Exception $e) {
             return $this->respondError($e->getMessage());
         }
@@ -96,11 +110,13 @@ trait AutoCrudApi
     public function update(RequestValidated $request, $id)
     {
         try {
-            $data = $this->main_serveice->update($request, $id);
+            $this->before($request, $id, function ($req, $res) {
+                $data = $this->main_serveice->update($req, $res);
+                return $this->respondWithSuccess($data);
+            });
         } catch (\Exception $e) {
             return $this->respondError($e->getMessage());
         }
-        return $this->respondWithSuccess($data);
     }
 
     #[Get("/destory/{id}")]
