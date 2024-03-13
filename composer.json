@@ -15,8 +15,8 @@
 
     "require": {
         "php": ">=8.0.0",
-        "f9webltd/laravel-api-response-helpers": "dev-master",
-        "lerouse/laravel-repository": "dev-master",
+        "f9webltd/laravel-api-response-helpers": "^2.0",
+        "lerouse/laravel-repository": "^2.4",
         "spatie/laravel-route-attributes": "^1.20"
     },
     "repositories": [{
