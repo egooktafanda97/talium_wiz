@@ -12,6 +12,7 @@
     }],
     "license": "MIT",
     "minimum-stability": "dev",
+    "version": "1.0",
     "require": {
         "php": ">=8.0.0",
         "laravel/framework": "^9.0",
