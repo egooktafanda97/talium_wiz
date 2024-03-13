@@ -4,6 +4,7 @@ namespace TaliumAbstract\Attributes\Contract;
 
 use ReflectionClass;
 use ReflectionMethod;
+use TaliumAbstract\Attributes\Controller;
 use TaliumAbstract\Attributes\Ruters\Delete;
 use TaliumAbstract\Attributes\Ruters\Get;
 use TaliumAbstract\Attributes\Ruters\Group;
@@ -33,6 +34,13 @@ class ReflectionMeta
     {
         $className = $class;
         $class = new ReflectionClass($className);
+
+        // Mendapatkan atribut Controller dari kelas jika ada
+        $controllerAttribute = $class->getAttributes(Controller::class);
+        if (empty($controllerAttribute)) {
+            // Jika kelas tidak memiliki atribut Controller, kembalikan array kosong
+            return [];
+        }
 
         // Mendapatkan nama kelas
         $className = $class->getName();
