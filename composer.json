@@ -15,7 +15,6 @@
     "version": "1.0",
     "require": {
         "php": ">=8.0.0",
-        "laravel/framework": "^9.0",
         "f9webltd/laravel-api-response-helpers": "dev-master",
         "lerouse/laravel-repository": "dev-master",
         "spatie/laravel-route-attributes": "^1.20"
