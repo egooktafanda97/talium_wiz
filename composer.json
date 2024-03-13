@@ -11,7 +11,7 @@
         "email": "egooktafanda1097@gmail.com"
     }],
     "license": "MIT",
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "version": "1.0",
     "require": {
         "php": ">=8.0.0",
