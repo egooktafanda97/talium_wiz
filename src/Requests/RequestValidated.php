@@ -52,7 +52,7 @@ class RequestValidated extends FormRequest
             ]);
         } else {
             $response = redirect()
-                ->route('guest.login')
+                ->back()
                 ->with('message', 'Ops! Some errors occurred')
                 ->withErrors($validator);
         }

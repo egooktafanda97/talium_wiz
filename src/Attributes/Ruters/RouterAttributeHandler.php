@@ -42,7 +42,7 @@ class RouterAttributeHandler
         $routers = [];
 
         // Cek apakah kelas memiliki atribut dan jika memiliki kunci 'prefix'
-        if (!empty($data['attribute']) && isset($data['attribute']['prefix'])) {
+        if (!empty($data['attribute'])) {
             // Iterasi setiap metode
             foreach ($data['methods'] as $method) {
                 // Ambil informasi tentang metode
@@ -72,8 +72,19 @@ class RouterAttributeHandler
                         // Jika tidak ada atribut HTTP yang ditemukan, lewati metode ini
                         continue;
                     }
-                    $router['uri'] = $data['attribute']['prefix'] . '/' . $url_method;
+                    $router['prefix'] = $data['attribute']['prefix'] ?? $data['attribute']['group']['prefix'] ?? '';
+                    $router['url'] = $url_method;
                     $router['controller'] = [$data['class'], $methodName];
+
+                    // group
+                    if (!empty($data['attribute']['group'])) {
+                        $router['attribute_group'] = $data['attribute']['group'];
+                    }
+
+
+                    if (!empty($data['attribute']['group']['middleware'])) {
+                        $router['middleware'] = $data['attribute']['middleware'];
+                    }
 
                     // Tambahkan middleware ke router jika ada
                     if (!empty($data['attribute']['middleware'])) {
@@ -87,6 +98,10 @@ class RouterAttributeHandler
 
                     if (!empty($attributes['name'])) {
                         $router['name'] .= "." . $attributes['name'];
+                    } else {
+                        $router['name'] = !empty($router['name']) ?
+                            $router['name'] . "." . $methodName :
+                            str_replace('/', '.', ($router['prefix'] . "/" . $method['method_name']));
                     }
 
                     $routers[] = $router;
@@ -105,21 +120,31 @@ class RouterAttributeHandler
         }, $controllerFiles);
         $routes_list = [];
         foreach ($controllerFiles as $items) {
-            if ($items == 'App\Http\Controllers\Api\ManagementSchoole\SchooleController') {
-                $routes =  ReflectionMeta::HirarchyAttributes($items);
-                if (!empty($routes)) {
-                    $arr =  self::build((ReflectionMeta::HirarchyAttributes($items)));
-                    foreach ($arr as $router) {
-                        $routes_list[] = $router;
-                    }
+            $routes = ReflectionMeta::HirarchyAttributes($items);
+            if (!empty($routes['attribute'])) {
+                $arr = self::build((ReflectionMeta::HirarchyAttributes($items)));
+                foreach ($arr as $router) {
+                    $routes_list[] = $router;
                 }
             }
         }
+
         foreach ($routes_list as $router) {
             try {
-                Route::middleware($router['middleware'] ?? [])
-                    ->name($router['name'] ?? null)
-                    ->{strtolower($router['method'])}($router['uri'], $router['controller']);
+
+                Route::group($router['attribute_group'] ?? [], function () use ($router) {
+                    if (is_array($router['url'])) {
+                        foreach ($router['url'] as $url) {
+                            Route::group($router['method_group'] ?? [], function () use ($url, $router) {
+                                Route::{strtolower($router['method'])}($url, $router['controller'])
+                                    ->name($router['name'] ?? null);
+                            });
+                        }
+                    } else {
+                        Route::{strtolower($router['method'])}($router['url'], $router['controller'])
+                            ->name($router['name'] ?? null);
+                    }
+                });
             } catch (\Throwable) {
             }
         }

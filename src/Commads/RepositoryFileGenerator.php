@@ -7,6 +7,8 @@ trait RepositoryFileGenerator
     public function handle()
     {
         $modelName = $this->argument('modelName');
+        // $makeModel = $this->option('m');
+        // $makeController = $this->option('c');
 
         // Parsing Namespace dan Nama Class
         $segments = explode('\\', $modelName);
