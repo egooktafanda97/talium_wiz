@@ -1,6 +1,8 @@
 {
     "name": "talium/wiz",
     "description": "abstract automatic proccess",
+    "keywords": ["framework", "laravel"],
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Talium\\Wiz\\": "src/"
@@ -10,14 +12,17 @@
         "name": "egooktafanda97",
         "email": "egooktafanda1097@gmail.com"
     }],
-    "license": "MIT",
-    "minimum-stability": "dev",
+
     "require": {
         "php": ">=8.0.0",
         "laravel/framework": "^9.0",
-        "f9webltd/laravel-api-response-helpers": "dev-master",
-        "lerouse/laravel-repository": "dev-master",
-        "spatie/laravel-route-attributes": "^1.20",
-        "php-open-source-saver/jwt-auth": "^2.1"
-    }
+        "f9webltd/laravel-api-response-helpers": "^2.0",
+        "lerouse/laravel-repository": "^2.4",
+        "spatie/laravel-route-attributes": "^1.20"
+
+    },
+    "repositories": [{
+        "type": "vcs",
+        "url": "https://github.com/egooktafanda97/talium_wiz.git"
+    }]
 }
