@@ -4,7 +4,8 @@ namespace TaliumAbstract\Attributes\Contract;
 
 use ReflectionClass;
 use ReflectionMethod;
-use TaliumAbstract\Attributes\Controller;
+use TaliumAbstract\Attributes\Controllers;
+use TaliumAbstract\Attributes\RestController;
 use TaliumAbstract\Attributes\Ruters\Delete;
 use TaliumAbstract\Attributes\Ruters\Get;
 use TaliumAbstract\Attributes\Ruters\Group;
@@ -13,10 +14,11 @@ use TaliumAbstract\Attributes\Ruters\Name;
 use TaliumAbstract\Attributes\Ruters\Post;
 use TaliumAbstract\Attributes\Ruters\Prefix;
 use TaliumAbstract\Attributes\Ruters\Put;
+use TaliumAbstract\Attributes\WebController;
 
 class ReflectionMeta
 {
-    public static function  getAttribute($class, $attributeClassName, $args = null)
+    public static function getAttribute($class, $attributeClassName, $args = null)
     {
         $reflectionClass = new ReflectionClass($class);
         $classAttributes = $reflectionClass->getAttributes($attributeClassName);
@@ -35,15 +37,22 @@ class ReflectionMeta
         $className = $class;
         $class = new ReflectionClass($className);
 
-        // Mendapatkan atribut Controller dari kelas jika ada
-        $controllerAttribute = $class->getAttributes(Controller::class);
-        if (empty($controllerAttribute)) {
-            // Jika kelas tidak memiliki atribut Controller, kembalikan array kosong
+        // Mendapatkan nama kelas
+        $className = $class->getName();
+        $ClassControll = $class->getAttributes(Controllers::class);
+        if (empty($ClassControll)) {
             return [];
         }
 
-        // Mendapatkan nama kelas
-        $className = $class->getName();
+        $RestclassControll = $class->getAttributes(RestController::class);
+        if (!empty($RestclassControll)) {
+            return [];
+        }
+
+        $WebClassControll = $class->getAttributes(WebController::class);
+        if (!empty($WebClassControll)) {
+            return [];
+        }
 
         // Inisialisasi array untuk menyimpan data
         $data = [
@@ -62,8 +71,8 @@ class ReflectionMeta
         // Mendapatkan atribut Group dari kelas jika ada
         $groupAttribute = $class->getAttributes(Group::class);
         if (!empty($groupAttribute)) {
-            $middleware = $groupAttribute[0]->newInstance()->group;
-            $data['attribute']['middleware'] = $middleware;
+            $group = $groupAttribute[0]->newInstance()->group;
+            $data['attribute']['group'] = $group;
         }
 
 
@@ -73,7 +82,6 @@ class ReflectionMeta
             $name = $groupAttribute[0]->newInstance()->name;
             $data['attribute']['name'] = $name;
         }
-
 
 
         // Mendapatkan semua metode dalam kelas
@@ -135,7 +143,6 @@ class ReflectionMeta
                 $name = $nameAttribute[0]->newInstance()->name;
                 $methodData['attributes']['name'] = $name;
             }
-
             if (!$methodData['attributes'])
                 continue;
             $data['methods'][] = $methodData;

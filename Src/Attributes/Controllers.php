@@ -5,9 +5,9 @@ namespace TaliumAbstract\Attributes;
 use Attribute;
 
 #[Attribute]
-class Controller
+class Controllers
 {
-    public function __construct(public $controller = true)
+    public function __construct(public $controller = null)
     {
     }
 }
