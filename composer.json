@@ -17,6 +17,7 @@
         "laravel/framework": "^9.0",
         "f9webltd/laravel-api-response-helpers": "dev-master",
         "lerouse/laravel-repository": "dev-master",
-        "spatie/laravel-route-attributes": "^1.20"
+        "spatie/laravel-route-attributes": "^1.20",
+        "php-open-source-saver/jwt-auth": "^2.1"
     }
 }

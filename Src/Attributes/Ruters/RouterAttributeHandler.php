@@ -5,7 +5,6 @@ namespace TaliumAbstract\Attributes\Ruters;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use TaliumAbstract\Attributes\Contract\ReflectionMeta;
-
 class RouterAttributeHandler
 {
     public function __construct()
@@ -45,11 +44,10 @@ class RouterAttributeHandler
         if (!empty($data['attribute']) && isset($data['attribute']['prefix'])) {
             // Iterasi setiap metode
             foreach ($data['methods'] as $method) {
-                // Ambil informasi tentang metode
+
                 $methodName = $method['method_name'];
                 $attributes = $method['attributes'];
 
-                // Buat router hanya jika metode memiliki atribut
                 if (!empty($attributes)) {
                     // Inisialisasi array untuk menyimpan data router
                     $router = [];
@@ -105,13 +103,11 @@ class RouterAttributeHandler
         }, $controllerFiles);
         $routes_list = [];
         foreach ($controllerFiles as $items) {
-            if ($items == 'App\Http\Controllers\Api\ManagementSchoole\SchooleController') {
-                $routes =  ReflectionMeta::HirarchyAttributes($items);
-                if (!empty($routes)) {
-                    $arr =  self::build((ReflectionMeta::HirarchyAttributes($items)));
-                    foreach ($arr as $router) {
-                        $routes_list[] = $router;
-                    }
+            $routes =  ReflectionMeta::HirarchyAttributes($items);
+            if (!empty($routes)) {
+                $arr =  self::build((ReflectionMeta::HirarchyAttributes($items)));
+                foreach ($arr as $router) {
+                    $routes_list[] = $router;
                 }
             }
         }
