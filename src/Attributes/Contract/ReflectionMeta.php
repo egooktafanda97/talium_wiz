@@ -36,24 +36,12 @@ class ReflectionMeta
     public static function HirarchyAttributes($class)
     {
         $className = $class;
+
         $class = new ReflectionClass($className);
 
         // Mendapatkan nama kelas
         $className = $class->getName();
-        $ClassControll = $class->getAttributes(Controllers::class);
-        if (empty($ClassControll)) {
-            return [];
-        }
 
-        $RestclassControll = $class->getAttributes(RestController::class);
-        if (!empty($RestclassControll)) {
-            return [];
-        }
-
-        $WebClassControll = $class->getAttributes(WebController::class);
-        if (!empty($WebClassControll)) {
-            return [];
-        }
 
         // Inisialisasi array untuk menyimpan data
         $data = [
@@ -181,28 +169,31 @@ class ReflectionMeta
                         if (!empty($ClassControll)) {
                             $controllers = $ClassControll[0]->newInstance()->controller;
                             $data = [
-                                "namespace" =>$className,
+                                "controller" => $controllers ?? 'web',
+                                "namespace" => $className,
                                 "attribute" => $controllers
                             ];
-                            $classesWithNamespace[] =  $data;
+                            $classesWithNamespace[] = $data;
                         }
                         $ClassControll = $class->getAttributes(RestController::class);
                         if (!empty($ClassControll)) {
                             $controllers = $ClassControll[0]->newInstance()->controller;
                             $data = [
-                                "namespace" =>$className,
+                                "controller" => "api",
+                                "namespace" => $className,
                                 "attribute" => $controllers
                             ];
-                            $classesWithNamespace[] =  $data;
+                            $classesWithNamespace[] = $data;
                         }
                         $ClassControll = $class->getAttributes(WebController::class);
                         if (!empty($ClassControll)) {
                             $controllers = $ClassControll[0]->newInstance()->controller;
                             $data = [
-                                "namespace" =>$className,
+                                "controller" => "web",
+                                "namespace" => $className,
                                 "attribute" => $controllers
                             ];
-                            $classesWithNamespace[] =  $data;
+                            $classesWithNamespace[] = $data;
                         }
 
                     }

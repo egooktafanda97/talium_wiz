@@ -112,42 +112,58 @@ class RouterAttributeHandler
 
     public static function route()
     {
-        $controllerFiles = self::findController();
-        if(!empty(config('RouterAttributeNameSpace')))
-            $controllerFiles = config('RouterAttributeNameSpace');
+        $controllerFiles = self::findControllers();
+        try {
+            if (!empty(config('RouterAttributeNameSpace')) && is_array(config('RouterAttributeNameSpace')))
+                $controllerFiles = config('RouterAttributeNameSpace');
+            else
+                $controllerFiles = self::findControllers();
+        } catch (\Throwable) {
+        }
         $rootPath = base_path();
         $controllerFiles = array_map(function ($path) use ($rootPath) {
             return str_replace($rootPath, '', $path);
         }, $controllerFiles);
         $routes_list = [];
-        foreach ($controllerFiles as $items) {
-            $routes = ReflectionMeta::HirarchyAttributes($items);
-            if (!empty($routes['attribute'])) {
-                $arr = self::build((ReflectionMeta::HirarchyAttributes($items)));
-                foreach ($arr as $router) {
-                    $routes_list[] = $router;
+        foreach ($controllerFiles as $key => $items) {
+            foreach ($items as $item) {
+                $routes = ReflectionMeta::HirarchyAttributes($item);
+                if (!empty($routes['attribute'])) {
+                    $arr = self::build((ReflectionMeta::HirarchyAttributes($item)));
+                    foreach ($arr as $router) {
+                        $routes_list[] = array_merge($router, ["guard" => $key ?? 'web']);
+                    }
                 }
             }
         }
-
         foreach ($routes_list as $router) {
             try {
-                Route::group($router['attribute_group'] ?? [], function () use ($router) {
-                    if (is_array($router['url'])) {
-                        foreach ($router['url'] as $url) {
-                            Route::group($router['method_group'] ?? [], function () use ($url, $router) {
-                                Route::{strtolower($router['method'])}($url, $router['controller'])
-                                    ->name($router['name'] ?? null);
-                            });
+                self::guard($router['guard'], function () {
+                    Route::group($router['attribute_group'] ?? [], function () use ($router) {
+                        if (is_array($router['url'])) {
+                            foreach ($router['url'] as $url) {
+                                Route::group($router['method_group'] ?? [], function () use ($url, $router) {
+                                    Route::{strtolower($router['method'])}($url, $router['controller'])
+                                        ->name($router['name'] ?? null);
+                                });
+                            }
+                        } else {
+                            Route::{strtolower($router['method'])}($router['url'], $router['controller'])
+                                ->name($router['name'] ?? null);
                         }
-                    } else {
-                        Route::{strtolower($router['method'])}($router['url'], $router['controller'])
-                            ->name($router['name'] ?? null);
-                    }
+                    });
                 });
+
             } catch (\Throwable) {
             }
         }
+    }
+
+    public static function guard(string $guard, $callback)
+    {
+        Route::group($guard === "api" ? ["api"] : [], function () use ($guard, $callback) {
+            $callback($guard);
+        });
     }
 
     public static function test()
@@ -155,14 +171,29 @@ class RouterAttributeHandler
         Route::post('/log', [\App\Http\Controllers\Api\Auth\LoginController::class, 'index']);
     }
 
-    public static function pushToConfig()
+    public static function findControllers()
     {
         $data = ReflectionMeta::findPhpFilesWithClass(app_path());
         $namespaces = [];
         foreach ($data as $classData) {
-            $namespaces[] = $classData['namespace'] . '::class';
+            $namespaces[$classData['controller']][] = $classData['namespace'];
         }
-        $result = "<?php\n\nreturn [\n    " . implode(",\n    ", $namespaces) . ",\n];\n";
+        return $namespaces;
+
+    }
+
+    public static function pushToConfig()
+    {
+        $data = self::findControllers();
+        $namespaces = "";
+        foreach ($data as $key => $classData) {
+            $classes = collect($classData)->map(function ($x) {
+                return $x . '::class';
+            })->toArray();
+            $namespaces .= "'" . $key . "' => [\n        " . implode(",\n        ", $classes) . "\n    ],\n";
+        }
+
+        $result = "<?php\n\nreturn [\n    " . $namespaces . "];\n";
         $configPath = config_path('RouterAttributeNameSpace.php');
         file_put_contents($configPath, $result);
     }

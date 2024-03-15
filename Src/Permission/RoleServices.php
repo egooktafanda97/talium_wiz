@@ -19,7 +19,7 @@ class RoleServices
     {
         return [
             "role" => Role::where('guard_name', $request->guard ?? 'web')->whereNotIn("name", ["super-admin"])->orderBy("id", "DESC")->get(),
-            "permission" => Permission::whereNotNull("group_permission")
+            "permission" => Permission::whereNotNull("group")
                 ->where("guard_name", "web")
                 ->when(!empty($request->get("group")), function ($q) use ($request) {
                     $q->where("group_permission", $request->get("group"));
