@@ -138,7 +138,7 @@ class RouterAttributeHandler
         }
         foreach ($routes_list as $router) {
             try {
-                self::guard($router['guard'], function () {
+                Route::group($router['guard'] === "api" ? ["api"] : [], function () use ($router) {
                     Route::group($router['attribute_group'] ?? [], function () use ($router) {
                         if (is_array($router['url'])) {
                             foreach ($router['url'] as $url) {
@@ -159,12 +159,6 @@ class RouterAttributeHandler
         }
     }
 
-    public static function guard(string $guard, $callback)
-    {
-        Route::group($guard === "api" ? ["api"] : [], function () use ($guard, $callback) {
-            $callback($guard);
-        });
-    }
 
     public static function test()
     {

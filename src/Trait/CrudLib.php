@@ -87,13 +87,13 @@ trait CrudLib
         return ["Items" => $Items, ...$this->dataView];
     }
 
-    #[Get("/create", middleware: "web")]
+    #[Get("/create")]
     public function create(Request $request)
     {
         return view($request->view, $this->data_view());
     }
 
-    #[Get("/create/{id}", middleware: "web")]
+    #[Get("/create/{id}")]
     public function createUpdate(Request $request)
     {
         return view($request->view, $this->data_view());
