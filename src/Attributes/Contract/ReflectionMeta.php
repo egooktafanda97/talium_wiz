@@ -2,6 +2,7 @@
 
 namespace TaliumAbstract\Attributes\Contract;
 
+use Symfony\Component\Finder\Finder;
 use ReflectionClass;
 use ReflectionMethod;
 use TaliumAbstract\Attributes\Controllers;
@@ -149,4 +150,67 @@ class ReflectionMeta
         }
         return $data;
     }
+
+
+    public static function findPhpFilesWithClass($directory)
+    {
+        $classesWithNamespace = [];
+
+        // Recursive function to search for PHP files with class and namespace
+        $searchInDirectory = function ($dir, $namespace = '') use (&$searchInDirectory, &$classesWithNamespace) {
+            $files = scandir($dir);
+            foreach ($files as $file) {
+                if ($file === '.' || $file === '..') {
+                    continue;
+                }
+                $path = $dir . '/' . $file;
+                if (is_dir($path)) {
+                    $subNamespace = $namespace !== '' ? $namespace . '\\' . $file : $file;
+                    $searchInDirectory($path, $subNamespace);
+                } elseif (pathinfo($path, PATHINFO_EXTENSION) === 'php') {
+                    // Read PHP file contents
+                    $content = file_get_contents($path);
+                    // Check if the file contains a namespace and class
+                    if (preg_match('/\bnamespace\s+([\w\\\]+);.*?\bclass\s+(\w+)/s', $content, $matches)) {
+                        $namespace = isset($matches[1]) ? $matches[1] : '';
+                        $class = isset($matches[2]) ? $matches[2] : '';
+                        $namespaces = $namespace . '\\' . $class;
+                        $class = new ReflectionClass($namespaces);
+                        $className = $class->getName();
+                        $ClassControll = $class->getAttributes(Controllers::class);
+                        if (!empty($ClassControll)) {
+                            $controllers = $ClassControll[0]->newInstance()->controller;
+                            $data = [
+                                "namespace" =>$className,
+                                "attribute" => $controllers
+                            ];
+                            $classesWithNamespace[] =  $data;
+                        }
+                        $ClassControll = $class->getAttributes(RestController::class);
+                        if (!empty($ClassControll)) {
+                            $controllers = $ClassControll[0]->newInstance()->controller;
+                            $data = [
+                                "namespace" =>$className,
+                                "attribute" => $controllers
+                            ];
+                            $classesWithNamespace[] =  $data;
+                        }
+                        $ClassControll = $class->getAttributes(WebController::class);
+                        if (!empty($ClassControll)) {
+                            $controllers = $ClassControll[0]->newInstance()->controller;
+                            $data = [
+                                "namespace" =>$className,
+                                "attribute" => $controllers
+                            ];
+                            $classesWithNamespace[] =  $data;
+                        }
+
+                    }
+                }
+            }
+        };
+        $searchInDirectory($directory);
+        return $classesWithNamespace;
+    }
+
 }

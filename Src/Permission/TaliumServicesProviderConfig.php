@@ -15,22 +15,18 @@ class TaliumServicesProviderConfig
         });
     }
 
-    public static function push_permissions()
+    public static function register_permissions_route()
     {
         $routes = Route::getRoutes()->getRoutes();
         foreach ($routes as $route) {
-            if ($route->getName() != '') {
-                $permission = Permission::where('name', $route->getName())->first();
+            if ($route->getName() != '' && !empty($route->getName())) {
+                $permission = Permission::whereName($route->getName())->first();
                 if (is_null($permission)) {
-                    if ((($route->getAction()['middleware']['0'] ?? null) == 'web' || ($route->getAction()['middleware']['0'] ?? null) == 'api'))
-                        Permission::create(['name' => $route->getName(), "guard_name" => ($route->getAction()['middleware']['0'] ?? null), "group_permission" => $route->getAction()['group'] ?? null]);
+                    if ((($route->getAction()['middleware']['0'] ?? null) === 'web' || ($route->getAction()['middleware']['0'] ?? null) === 'api'))
+                        Permission::create(['name' => $route->getName(), "guard_name" => ($route->getAction()['middleware']['0'] ?? null), "group" => $route->getAction()['group'] ?? null]);
                     else
-                        Permission::create(['name' => $route->getName(), "guard_name" => 'web', "group_permission" => $route->getAction()['group'] ?? null]);
+                        Permission::create(['name' => $route->getName(), "guard_name" => 'web', "group" => $route->getAction()['group'] ?? null]);
                 }
-//                else {
-//                    $permission->update(['name' => $route->getName(), "guard_name" => ($route->getAction()['middleware']['0'] ?? null), "group_permission" => $route->getAction()['group'] ?? null]);
-//                    $permission->save();
-//                }
             }
         }
     }

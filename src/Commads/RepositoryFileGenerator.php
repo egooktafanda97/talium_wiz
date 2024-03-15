@@ -4,6 +4,7 @@ namespace TaliumAbstract\Commads;
 
 trait RepositoryFileGenerator
 {
+
     public function handle()
     {
         $modelName = $this->argument('modelName');

@@ -33,7 +33,7 @@ class RoleServices
                     return $x;
                 }),
             "role_permission" => (Role::where("id", ($request->get("role-active") ?? null))->first()->permissions ?? []),
-            "modules" => Permission::select(["group_permission as group"])->groupBy("group_permission")->get()
+            "modules" => Permission::select(["group as group"])->groupBy("group_permission")->get()
         ];
     }
 
@@ -112,7 +112,7 @@ class RoleServices
     /**
      * Set User Role Permission
      */
-    public function serUserRolePermission(Model $user, $role_name, $permission_id, $guard_api = false)
+    public function setUserRolePermission(Model $user, $role_name, $permission_id, $guard_api = false)
     {
         try {
             $setter = ["api"];

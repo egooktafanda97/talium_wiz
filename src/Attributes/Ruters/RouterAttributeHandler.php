@@ -2,6 +2,7 @@
 
 namespace TaliumAbstract\Attributes\Ruters;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use TaliumAbstract\Attributes\Contract\ReflectionMeta;
@@ -10,6 +11,7 @@ class RouterAttributeHandler
 {
     public function __construct()
     {
+
     }
 
     public function attribute()
@@ -38,9 +40,6 @@ class RouterAttributeHandler
     public static function build($data): array
     {
         $routers = [];
-        // Inisialisasi array untuk menyimpan data router
-        $routers = [];
-
         // Cek apakah kelas memiliki atribut dan jika memiliki kunci 'prefix'
         if (!empty($data['attribute'])) {
             // Iterasi setiap metode
@@ -114,6 +113,8 @@ class RouterAttributeHandler
     public static function route()
     {
         $controllerFiles = self::findController();
+        if(!empty(config('RouterAttributeNameSpace')))
+            $controllerFiles = config('RouterAttributeNameSpace');
         $rootPath = base_path();
         $controllerFiles = array_map(function ($path) use ($rootPath) {
             return str_replace($rootPath, '', $path);
@@ -131,7 +132,6 @@ class RouterAttributeHandler
 
         foreach ($routes_list as $router) {
             try {
-
                 Route::group($router['attribute_group'] ?? [], function () use ($router) {
                     if (is_array($router['url'])) {
                         foreach ($router['url'] as $url) {
@@ -153,5 +153,17 @@ class RouterAttributeHandler
     public static function test()
     {
         Route::post('/log', [\App\Http\Controllers\Api\Auth\LoginController::class, 'index']);
+    }
+
+    public static function pushToConfig()
+    {
+        $data = ReflectionMeta::findPhpFilesWithClass(app_path());
+        $namespaces = [];
+        foreach ($data as $classData) {
+            $namespaces[] = $classData['namespace'] . '::class';
+        }
+        $result = "<?php\n\nreturn [\n    " . implode(",\n    ", $namespaces) . ",\n];\n";
+        $configPath = config_path('RouterAttributeNameSpace.php');
+        file_put_contents($configPath, $result);
     }
 }
