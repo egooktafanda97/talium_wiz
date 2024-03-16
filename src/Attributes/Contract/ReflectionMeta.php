@@ -5,6 +5,7 @@ namespace TaliumAbstract\Attributes\Contract;
 use Symfony\Component\Finder\Finder;
 use ReflectionClass;
 use ReflectionMethod;
+use TaliumAbstract\Attributes\Args;
 use TaliumAbstract\Attributes\Controllers;
 use TaliumAbstract\Attributes\RestController;
 use TaliumAbstract\Attributes\Ruters\Delete;
@@ -19,6 +20,12 @@ use TaliumAbstract\Attributes\WebController;
 
 class ReflectionMeta
 {
+    /**
+     * mencari attribute tertentu di dalam class
+     * @param string $directory
+     * @return array
+     * @throws \ReflectionException
+     */
     public static function getAttribute($class, $attributeClassName, $args = null)
     {
         $reflectionClass = new ReflectionClass($class);
@@ -33,6 +40,12 @@ class ReflectionMeta
         return null;
     }
 
+    /**
+     * membuat hierarki atribut router
+     * @param string $directory
+     * @return array
+     * @throws \ReflectionException
+     */
     public static function HirarchyAttributes($class)
     {
         $className = $class;
@@ -140,6 +153,13 @@ class ReflectionMeta
     }
 
 
+    /**
+     * Get all PHP files with class and namespace
+     * @param string $directory
+     * @return array
+     * @throws \ReflectionException
+     * Mencari semua file PHP dengan dengan attribute controller, web, api
+     */
     public static function findPhpFilesWithClass($directory)
     {
         $classesWithNamespace = [];
@@ -204,4 +224,24 @@ class ReflectionMeta
         return $classesWithNamespace;
     }
 
+    /**
+     * mengambil value dari attribute parameter args
+     */
+    public static function getAttributeArgs($class, $method)
+    {
+        $reflection = new ReflectionMethod($class, $method);
+
+        dd($parameters = $reflection->getParameters());
+        $parameters = $reflection->getParameters();
+        if (empty($parameters)) {
+            return null;
+        }
+        dd($reflection);
+        foreach ($parameters as $parameter) {
+            $attributes = $parameter->getAttributes();
+            foreach ($attributes as $attribute) {
+                return $attribute->getArguments();
+            }
+        }
+    }
 }
