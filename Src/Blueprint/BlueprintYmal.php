@@ -1,10 +1,9 @@
 <?php
 
-namespace TaliumAbstract\Providers;
+namespace TaliumAbstract\Blueprint;
 
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Yaml\Yaml;
-use TaliumAbstract\Attributes\Args;
 
 class  BlueprintYmal
 {
@@ -30,7 +29,21 @@ class  BlueprintYmal
 
     public function Model()
     {
-        return $this->blueprints;
+        (new Building($this->blueprints))
+            ->model();
+    }
+
+    public function Blade()
+    {
+        (new Building($this->blueprints))
+            ->blade();
+    }
+
+    public function run($args)
+    {
+        foreach ($args as $arg) {
+            $this->$arg();
+        }
     }
 
     public function getBlueprint()
